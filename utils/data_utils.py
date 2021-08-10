@@ -8,20 +8,20 @@ import sys
 import re
 
 def read_patients_table(path):
-    p = pd.read_csv(os.path.join(path, 'PATIENTS.csv'))
+    p = pd.read_csv(os.path.join(path, 'PATIENTS.csv.gz'), compression='gzip')
     p = p[['SUBJECT_ID', 'GENDER', 'DOB', 'DOD',]]
     p['DOB'] = pd.to_datetime(p['DOB'])
     p['DOD'] = pd.to_datetime(p['DOD'])
     return p
 
 def read_cptevents_table(path):
-    cpt = pd.read_csv(os.path.join(path, 'CPTEVENTS.csv'))
+    cpt = pd.read_csv(os.path.join(path, 'CPTEVENTS.csv.gz'), compression='gzip')
     cpt = cpt[['SUBJECT_ID', 'HADM_ID', 'CPT_CD',]]
     return cpt
 
 
 def read_icd_procedures_table(path):
-    codes = pd.read_csv(os.path.join(path, 'D_ICD_PROCEDURES.csv'))
+    codes = pd.read_csv(os.path.join(path, 'D_ICD_PROCEDURES.csv.gz'), compression='gzip')
     codes = codes[['ICD9_CODE', 'SHORT_TITLE', 'LONG_TITLE']]
     procedures = pd.read_csv(os.path.join(path, 'PROCEDURES_ICD.csv'))
     procedures = procedures.merge(codes, how='inner', left_on='ICD9_CODE', right_on='ICD9_CODE')
@@ -34,7 +34,7 @@ def compute_time_delta(df):
     return df
 
 def read_admissions_table(path):
-    admits = pd.read_csv(os.path.join(path, 'ADMISSIONS.csv'))
+    admits = pd.read_csv(os.path.join(path, 'ADMISSIONS.csv.gz'), compression='gzip')
     admits = admits[['SUBJECT_ID', 'HADM_ID', 'ADMITTIME', 'DISCHTIME', 'DEATHTIME', 'DIAGNOSIS', 'MARITAL_STATUS', 'ETHNICITY', 'DISCHARGE_LOCATION', 'ADMISSION_TYPE']]
     admits.ADMITTIME = pd.to_datetime(admits.ADMITTIME, format = '%Y-%m-%d %H:%M:%S', errors = 'coerce')
     admits.DISCHTIME = pd.to_datetime(admits.DISCHTIME, format = '%Y-%m-%d %H:%M:%S', errors = 'coerce')
@@ -58,7 +58,7 @@ def add_readmission_column(df_adm):
     return df_adm
 
 def read_prescriptions_table(path):
-    prescription = pd.read_csv(os.path.join(path, 'PRESCRIPTIONS.csv'))
+    prescription = pd.read_csv(os.path.join(path, 'PRESCRIPTIONS.csv.gz'), compression='gzip')
     prescription = prescription[~ prescription['NDC'].isna()]
     prescription = prescription[['SUBJECT_ID', 'HADM_ID', 'NDC']].astype(int)
     prescription = prescription.dropna()
@@ -87,7 +87,7 @@ def filter_notes_table(admits, notes, filters = {
     return tn
 
 def read_notes_table(path):
-    notes = pd.read_csv(os.path.join(path, 'NOTEEVENTS.csv'))
+    notes = pd.read_csv(os.path.join(path, 'NOTEEVENTS.csv.gz'), compression='gzip')
     notes['TEXT'] = notes['TEXT'].fillna(' ')
     notes['TEXT'] = notes['TEXT'].str.replace('\n',' ')
     notes['TEXT'] = notes['TEXT'].str.replace('\r',' ')
@@ -97,15 +97,15 @@ def read_notes_table(path):
     return notes
 
 def read_icustays_table(path):
-    icu = pd.read_csv(os.path.join(path, 'ICUSTAYS.csv'))
+    icu = pd.read_csv(os.path.join(path, 'ICUSTAYS.csv.gz'), compression='gzip')
     icu['INTIME'] = pd.to_datetime(icu['INTIME'])
     icu['OUTTIME'] = pd.to_datetime(icu['OUTTIME'])
     return icu
 
 def read_icd_diagnoses_table(path):
-    codes = pd.read_csv(os.path.join(path, 'D_ICD_DIAGNOSES.csv'))
+    codes = pd.read_csv(os.path.join(path, 'D_ICD_DIAGNOSES.csv.gz'), compression='gzip')
     codes = codes[['ICD9_CODE', 'SHORT_TITLE', 'LONG_TITLE']]
-    diagnoses = pd.read_csv(os.path.join(path, 'DIAGNOSES_ICD.csv'))
+    diagnoses = pd.read_csv(os.path.join(path, 'DIAGNOSES_ICD.csv.gz'), compression='gzip')
     diagnoses = diagnoses.merge(codes, how='inner', left_on='ICD9_CODE', right_on='ICD9_CODE')
     diagnoses[['SUBJECT_ID', 'HADM_ID', 'SEQ_NUM']] = diagnoses[['SUBJECT_ID', 'HADM_ID', 'SEQ_NUM']].astype(int)
     return diagnoses
