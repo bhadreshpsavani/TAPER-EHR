@@ -23,7 +23,7 @@ def read_cptevents_table(path):
 def read_icd_procedures_table(path):
     codes = pd.read_csv(os.path.join(path, 'D_ICD_PROCEDURES.csv.gz'), compression='gzip')
     codes = codes[['ICD9_CODE', 'SHORT_TITLE', 'LONG_TITLE']]
-    procedures = pd.read_csv(os.path.join(path, 'PROCEDURES_ICD.csv'))
+    procedures = pd.read_csv(os.path.join(path, 'PROCEDURES_ICD.csv.gz'), compression='gzip')
     procedures = procedures.merge(codes, how='inner', left_on='ICD9_CODE', right_on='ICD9_CODE')
     procedures[['SUBJECT_ID', 'HADM_ID', 'SEQ_NUM']] = procedures[['SUBJECT_ID', 'HADM_ID', 'SEQ_NUM']].astype(int)
     return procedures
